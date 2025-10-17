@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub User Creation Date</title>
+    <!-- Bootstrap CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+        #github-created-at {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center">GitHub User Creation Date</h1>
+
+        <form id="github-user-abc123" class="mb-4">
+            <div class="mb-3">
+                <label for="github-username-input" class="form-label">GitHub Username:</label>
+                <input type="text" class="form-control" id="github-username-input" placeholder="e.g., octocat" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Get Creation Date</button>
+        </form>
+
+        <div id="message-display" class="alert mt-3 d-none" role="alert">
+            <!-- Messages (e.g., loading, error, success) will be displayed here -->
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Account Creation Date (UTC):</h5>
+                <p class="card-text" id="github-created-at"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector("#github-user-abc123");
+            const usernameInput = document.getElementById("github-username-input");
+            const createdAtDisplay = document.getElementById("github-created-at");
+            const messageDisplay = document.getElementById("message-display");
+
+            // Function to display messages
+            const showMessage = (text, type) => {
+                messageDisplay.textContent = text;
+                messageDisplay.className = `alert alert-${type} mt-3`;
+                messageDisplay.classList.remove('d-none');
+            };
+
+            // Function to clear messages and results
+            const resetUI = () => {
+                createdAtDisplay.textContent = '';
+                messageDisplay.classList.add('d-none');
+                messageDisplay.textContent = '';
+            };
+
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault(); // Prevent default form submission
+
+                resetUI(); // Clear previous results and messages
+                showMessage('Fetching data...', 'info');
+
+                const username = usernameInput.value.trim();
+
+                if (!username) {
+                    showMessage('Please enter a GitHub username.', 'warning');
+                    return;
+                }
+
+                let apiUrl = `https://api.github.com/users/${username}`;
+                const urlParams = new URLSearchParams(window.location.search);
+                const token = urlParams.get('token');
+
+                const headers = new Headers();
+                if (token) {
+                    headers.append('Authorization', `Bearer ${token}`);
+                }
+
+                try {
+                    const response = await fetch(apiUrl, { headers: headers });
+
+                    if (!response.ok) {
+                        if (response.status === 404) {
+                            throw new Error(`User "${username}" not found.`);
+                        } else if (response.status === 403) {
+                            throw new Error('API rate limit exceeded or invalid token. Please try again later or provide a valid token (e.g., ?token=YOUR_TOKEN).');
+                        } else {
+                            throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+                        }
+                    }
+
+                    const data = await response.json();
+
+                    if (data.created_at) {
+                        // Format date to YYYY-MM-DD UTC
+                        const formattedDate = new Date(data.created_at).toISOString().split('T')[0];
+                        createdAtDisplay.textContent = formattedDate;
+                        showMessage(`Successfully retrieved data for ${username}.`, 'success');
+                    } else {
+                        showMessage('Could not find creation date for this user.', 'warning');
+                    }
+
+                } catch (error) {
+                    showMessage(`Error: ${error.message}`, 'danger');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
