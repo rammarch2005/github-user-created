@@ -18,7 +18,7 @@
             border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
         }
-        #github-created-at {
+        #github-created-at, #github-account-age {
             font-size: 1.2em;
             font-weight: bold;
             color: #007bff;
@@ -27,7 +27,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mb-4 text-center">GitHub User Creation Date</h1>
+        <h1 class="mb-4 text-center">GitHub User Creation Date & Age</h1>
 
         <form id="github-user-abc123" class="mb-4">
             <div class="mb-3">
@@ -48,6 +48,8 @@
             <div class="card-body">
                 <h5 class="card-title">Account Creation Date (UTC):</h5>
                 <p class="card-text" id="github-created-at"></p>
+                <h5 class="card-title mt-3">Account Age:</h5>
+                <p class="card-text" id="github-account-age"></p>
             </div>
         </div>
     </div>
@@ -60,6 +62,7 @@
             const form = document.querySelector("#github-user-abc123");
             const usernameInput = document.getElementById("github-username-input");
             const createdAtDisplay = document.getElementById("github-created-at");
+            const accountAgeDisplay = document.getElementById("github-account-age"); // New element for account age
             const messageDisplay = document.getElementById("message-display");
             const githubStatusLiveRegion = document.getElementById("github-status"); // Reference to the ARIA live region
 
@@ -73,6 +76,7 @@
             // Function to clear messages and results
             const resetUI = () => {
                 createdAtDisplay.textContent = '';
+                accountAgeDisplay.textContent = ''; // Clear account age
                 messageDisplay.classList.add('d-none');
                 messageDisplay.textContent = '';
                 githubStatusLiveRegion.textContent = ''; // Clear live region content
@@ -120,11 +124,29 @@
                     const data = await response.json();
 
                     if (data.created_at) {
+                        const creationDate = new Date(data.created_at);
                         // Format date to YYYY-MM-DD UTC
-                        const formattedDate = new Date(data.created_at).toISOString().split('T')[0];
+                        const formattedDate = creationDate.toISOString().split('T')[0];
                         createdAtDisplay.textContent = formattedDate;
+
+                        // Calculate account age in whole years
+                        const today = new Date();
+                        let ageYears = today.getFullYear() - creationDate.getFullYear();
+
+                        // Adjust age if the current date hasn't reached the creation date yet this year
+                        if (today.getMonth() < creationDate.getMonth() ||
+                            (today.getMonth() === creationDate.getMonth() && today.getDate() < creationDate.getDate())) {
+                            ageYears--;
+                        }
+
+                        // Ensure age is not negative (e.g., if creation date is in the future, which shouldn't happen)
+                        if (ageYears < 0) {
+                            ageYears = 0;
+                        }
+
+                        accountAgeDisplay.textContent = `${ageYears} years`; // Display age
                         showMessage(`Successfully retrieved data for ${username}.`, 'success');
-                        githubStatusLiveRegion.textContent = `GitHub user lookup successful for ${username}. Creation date is ${formattedDate}.`; // Announce success
+                        githubStatusLiveRegion.textContent = `GitHub user lookup successful for ${username}. Creation date is ${formattedDate} and account is ${ageYears} years old.`; // Announce success with age
                     } else {
                         showMessage('Could not find creation date for this user.', 'warning');
                         githubStatusLiveRegion.textContent = `GitHub user lookup completed, but creation date not found for ${username}.`; // Announce warning/partial success
