@@ -62,9 +62,15 @@
             const form = document.querySelector("#github-user-abc123");
             const usernameInput = document.getElementById("github-username-input");
             const createdAtDisplay = document.getElementById("github-created-at");
-            const accountAgeDisplay = document.getElementById("github-account-age"); // New element for account age
+            const accountAgeDisplay = document.getElementById("github-account-age");
             const messageDisplay = document.getElementById("message-display");
-            const githubStatusLiveRegion = document.getElementById("github-status"); // Reference to the ARIA live region
+            const githubStatusLiveRegion = document.getElementById("github-status");
+
+            // Load cached username from localStorage on page load and repopulate the form
+            const cachedUsername = localStorage.getItem("github-user-abc123");
+            if (cachedUsername) {
+                usernameInput.value = cachedUsername;
+            }
 
             // Function to display messages (visual)
             const showMessage = (text, type) => {
@@ -76,16 +82,16 @@
             // Function to clear messages and results
             const resetUI = () => {
                 createdAtDisplay.textContent = '';
-                accountAgeDisplay.textContent = ''; // Clear account age
+                accountAgeDisplay.textContent = '';
                 messageDisplay.classList.add('d-none');
                 messageDisplay.textContent = '';
-                githubStatusLiveRegion.textContent = ''; // Clear live region content
+                githubStatusLiveRegion.textContent = '';
             };
 
             form.addEventListener('submit', async (event) => {
-                event.preventDefault(); // Prevent default form submission
+                event.preventDefault();
 
-                resetUI(); // Clear previous results and messages
+                resetUI();
                 const username = usernameInput.value.trim();
 
                 if (!username) {
@@ -95,7 +101,7 @@
                 }
 
                 showMessage('Fetching data...', 'info');
-                githubStatusLiveRegion.textContent = `GitHub user lookup initiated for ${username}.`; // Announce lookup start
+                githubStatusLiveRegion.textContent = `GitHub user lookup initiated for ${username}.`;
 
                 let apiUrl = `https://api.github.com/users/${username}`;
                 const urlParams = new URLSearchParams(window.location.search);
@@ -144,17 +150,21 @@
                             ageYears = 0;
                         }
 
-                        accountAgeDisplay.textContent = `${ageYears} years`; // Display age
+                        accountAgeDisplay.textContent = `${ageYears} years`;
                         showMessage(`Successfully retrieved data for ${username}.`, 'success');
-                        githubStatusLiveRegion.textContent = `GitHub user lookup successful for ${username}. Creation date is ${formattedDate} and account is ${ageYears} years old.`; // Announce success with age
+                        githubStatusLiveRegion.textContent = `GitHub user lookup successful for ${username}. Creation date is ${formattedDate} and account is ${ageYears} years old.`;
+
+                        // Cache the successful username in localStorage
+                        localStorage.setItem("github-user-abc123", username);
+
                     } else {
                         showMessage('Could not find creation date for this user.', 'warning');
-                        githubStatusLiveRegion.textContent = `GitHub user lookup completed, but creation date not found for ${username}.`; // Announce warning/partial success
+                        githubStatusLiveRegion.textContent = `GitHub user lookup completed, but creation date not found for ${username}.`;
                     }
 
                 } catch (error) {
                     showMessage(`Error: ${error.message}`, 'danger');
-                    githubStatusLiveRegion.textContent = `GitHub user lookup failed. Error: ${error.message}`; // Announce failure
+                    githubStatusLiveRegion.textContent = `GitHub user lookup failed. Error: ${error.message}`;
                 }
             });
         });
