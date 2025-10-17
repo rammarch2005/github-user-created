@@ -1,30 +1,35 @@
-# GitHub User Status Reporter
+# GitHub User Account Age Display
 
-![Live Demo](https://img.shields.io/badge/Live%20Demo-View%20App-brightgreen?style=for-the-badge&logo=github)
-[Live Demo](https://rammarch2005.github.io/github-user-created/)
+![GitHub User Account Age Display Screenshot](https://raw.githubusercontent.com/rammarch2005/github-user-created/main/screenshot.png)
+*(Replace with an actual screenshot of the application)*
 
-## Table of Contents
-*   [Project Overview](#project-overview)
-*   [Features](#features)
-*   [Setup Instructions](#setup-instructions)
-*   [Usage](#usage)
-*   [Technical Implementation Details](#technical-implementation-details)
-*   [License](#license)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-rammarch2005/github--user--created-blue?style=flat-square&logo=github)](https://github.com/rammarch2005/github-user-created)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Open-brightgreen?style=flat-square&logo=netlify)](https://rammarch2005.github.io/github-user-created/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## Project Overview
+---
 
-This project demonstrates an accessible method for reporting the status of an asynchronous operation, specifically a GitHub user lookup. It utilizes ARIA live regions to provide real-time updates on the lookup's progress (loading, success, or failure) in a way that is easily consumable by assistive technologies like screen readers. The primary goal is to enhance user experience by giving immediate, clear, and accessible feedback on backend interactions.
+## 1. Project Title and Brief Description
 
-## Features
+**Project Title:** GitHub User Account Age Display
 
-*   **Real-time Status Updates:** Provides immediate feedback on GitHub user lookup operations.
-*   **Accessible Feedback:** Implements `aria-live="polite"` on a dedicated status region (`#github-status`) to announce lookup states (e.g., "Loading...", "User found!", "User not found.") to assistive technologies without interrupting the user.
-*   **Clear Visual Indicators:** Displays status messages prominently on the screen for all users.
-*   **Error Handling:** Reports when a user is not found or if there are issues communicating with the GitHub API.
-*   **Simple User Interface:** A straightforward input field and button for ease of use.
+This project is a simple web application designed to fetch and display the account creation date of any GitHub user, along with their account's age calculated in whole years. Users can input a GitHub username, and the application will query the GitHub API to retrieve the necessary information, presenting it in a clear and user-friendly format.
 
-## Setup Instructions
+## 2. Features/Functionality Overview
 
-This is a client-side web application, so no complex backend setup is required.
+The application provides the following key functionalities:
 
-1.  **Clone the Repository:**
+*   **GitHub Username Input:** A dedicated input field allows users to enter any valid GitHub username.
+*   **Account Creation Date Display:** Upon successful retrieval, the exact date and time when the GitHub account was created are displayed.
+*   **Account Age Calculation:** The application calculates the total age of the GitHub account in whole years since its creation date.
+*   **Dynamic Updates:** The displayed information is updated dynamically based on the submitted username.
+*   **Error Handling:** Provides user feedback for invalid usernames or API retrieval errors.
+*   **Live Demo:** A publicly accessible live demo is available for immediate use.
+
+## 3. Setup Instructions
+
+This project is a static web application and does not require any backend setup or complex dependencies.
+
+**To run the project locally:**
+
+1.  **Clone the repository:**
